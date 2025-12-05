@@ -1,0 +1,22 @@
+{
+  "name": "util-universe",
+  "version": "1.0.0",
+  "description": "",
+  "files": [
+    "index.js"
+  ],
+  "dependencies": {},
+  "author": {
+    "name": "JAzzNoTE",
+    "url": "https://github.com/JAzzNoTE/util-universe"
+  },
+  "license": "",
+  "homepage": "",
+  "repository": {},
+  "keywords": [],
+  "scripts": {},
+  "devDependencies": {},
+  "engines": {
+    "node": ">= 8"
+  }
+}
