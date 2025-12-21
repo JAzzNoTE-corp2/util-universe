@@ -30,6 +30,32 @@ function deepCopy(destination, source, /*optional*/copyIterator = false) {
   return destination;
 }
 
+function isDeepStrictEqual(object1, object2) {
+  if (object1 === object2) return true;
+  if (object1 === null || typeof object1 !== 'object' || object2 === null || typeof object2 !== 'object') return false;
+  if (object1.constructor !== object2.constructor) return false;
+
+  if (Array.isArray(object1)) {
+    if (object1.length !== object2.length) return false;
+
+    for (let i = 0; i < object1.length; i++) {
+      if (!isDeepStrictEqual(object1[i], object2[i])) return false;
+    }
+    return true;
+  }
+
+  const keys1 = Object.keys(object1);
+  const keys2 = Object.keys(object2);
+
+  if (keys1.length !== keys2.length) return false;
+
+  for (const key of keys1) {
+    if (!keys2.includes(key) || !isDeepStrictEqual(object1[key], object2[key])) return false;
+  }
+
+  return true;
+}
+
 /**
  * @param {object} child - an object which must have 'prototype' property
  * @param {object} proto1
@@ -164,7 +190,7 @@ function mergeMessage(list) {
 module.exports = {
   isMac: (os.platform() === 'darwin'),
   rootPath: path.join(__dirname, '..'),
-  deepCopy, extend,
+  deepCopy, isDeepStrictEqual, extend,
   bubbleSort, getOrderNumber,
   roundTo, mean,
   isEqualArray,
