@@ -1,6 +1,7 @@
 const os = require('os');
 const path = require('path');
 const stdColor = require('./lib/stdColor.js');
+const trade = require('./lib/trade.js');
 
 // Deep copy object or array
 function deepCopy(destination, source, /*optional*/copyIterator = false) {
@@ -188,6 +189,8 @@ function mergeMessage(list) {
 }
 
 module.exports = {
+  trade,
+
   isMac: (os.platform() === 'darwin'),
   rootPath: path.join(__dirname, '..'),
   deepCopy, isDeepStrictEqual, extend,
