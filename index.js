@@ -188,6 +188,72 @@ function mergeMessage(list) {
   function addTodoColor(str) { return str.replace('TODO:', stdColor.bgYellow + ' TODO: ' + stdColor.reset); }
 }
 
+function noneDuplicateArray(arr) {
+  return arr.filter((item, pos) => arr.indexOf(item) == pos);
+}
+
+/**
+ * Creates a sequence of months in YYYYMM format between a start and end month.
+ * @param {number} startMonth - The starting month in YYYYMM format (e.g., 200302).
+ * @param {number} endMonth - The ending month in YYYYMM format (e.g., 201412).
+ * @returns {number[]} An array of numbers representing the sequence of months from start to end, inclusive (e.g., [200302, 200303, ...]).
+ */
+function createMonthSequence(startMonth, endMonth) {
+  var table = [];
+
+  while (startMonth <= endMonth) {
+    if (startMonth % 100 === 13) startMonth = startMonth + 100 - 12;
+    table.push(startMonth);
+    startMonth += 1;
+  }
+
+  return table;
+}
+
+/**
+ * 針對傳入陣列的item做排列組合
+ * Generates combinations of a specified size from an array.
+ * Note: This implementation is currently hardcoded to only support combinations of 3 items (`taken = 3`).
+ * @param {Array} arr - The input array from which to generate combinations.
+ * @param {number} taken - The number of items to include in each combination. Currently must be 3.
+ * @returns {Array<Array>} An array of arrays, where each inner array is a unique combination of items from the input array. Returns undefined if the input array is too long.
+ */
+function getMathCombination(arr, taken) {
+  if (arr.length > 13) return console.warn('getMathCombination | Inefficient length of array', arr);
+  let output = [];
+
+  // 可以寫成遞迴，但懶了
+  const len_i = arr.length - (taken - 1);
+  for (let i = 0; i < len_i; i += 1) {
+    const len_j = len_i + 1;
+    for (let j = i + 1; j < len_j; j += 1) {
+      const len_k = len_j + 1;
+      for (let k = j + 1; k < len_k; k += 1) {
+        output.push(util.deepCopy([arr[i], arr[j], arr[k]]));
+      }
+    }
+  }
+
+  return output;
+}
+
+function getFileExtension(str) {
+  let arr = str.split('.');
+  return arr[arr.length - 1].toLowerCase();
+}
+
+function getIntegerDigits(num) { return (typeof num !== 'number') ? null : num.toString().length; }
+
+function parseCronExpression(expression) {
+  const arr = expression.split(' ');
+  const exp = { second: arr[0], minute: arr[1], hour: arr[2], dayOfMonth: arr[3], month: arr[4], dayOfWeek: arr[5] };
+  const msg = add(exp.hour) + ':' + add(exp.minute) + ':' + add(exp.second);
+
+  return msg;
+
+  function add(str) { return (str.length == 1) ? '0' + str : str; }
+}
+
 module.exports = {
   trade,
 
@@ -207,61 +273,6 @@ module.exports = {
 
   mergeMessage, // For unit test
 
-  noneDuplicateArray: function (arr) {
-    return arr.filter((item, pos) => arr.indexOf(item) == pos);
-  },
-
-  /**
-   * @param {number} startMonth : 200302
-   * @param {number} endMonth : 201412
-   * @returns {array} : [200302, 200303, ...]
-   */
-  createMonthSequence: function (startMonth, endMonth) {
-    var table = [];
-
-    while (startMonth <= endMonth) {
-      if (startMonth % 100 === 13) startMonth = startMonth + 100 - 12;
-      table.push(startMonth);
-      startMonth += 1;
-    }
-
-    return table;
-  },
-
-  // 針對傳入陣列的item做排列組合
-  getMathCombination(arr, taken) {
-    if (arr.length > 13) return console.warn('getMathCombination | Inefficient length of array', arr);
-    let output = [];
-
-    // 可以寫成遞迴，但懶了
-    const len_i = arr.length - (taken - 1);
-    for (let i = 0; i < len_i; i += 1) {
-      const len_j = len_i + 1;
-      for (let j = i + 1; j < len_j; j += 1) {
-        const len_k = len_j + 1;
-        for (let k = j + 1; k < len_k; k += 1) {
-          output.push(util.deepCopy([arr[i], arr[j], arr[k]]));
-        }
-      }
-    }
-
-    return output;
-  },
-
-  getFileExtension: function (str) {
-    let arr = str.split('.');
-    return arr[arr.length - 1].toLowerCase();
-  },
-
-  getIntegerDigits: function (num) { return (typeof num !== 'number') ? null : num.toString().length; },
-
-  parseCronExpression: function (expression) {
-    const arr = expression.split(' ');
-    const exp = { second: arr[0], minute: arr[1], hour: arr[2], dayOfMonth: arr[3], month: arr[4], dayOfWeek: arr[5] };
-    const msg = add(exp.hour) + ':' + add(exp.minute) + ':' + add(exp.second);
-
-    return msg;
-
-    function add(str) { return (str.length == 1) ? '0' + str : str; }
-  }
+  noneDuplicateArray, createMonthSequence, getMathCombination, getFileExtension, getIntegerDigits,
+  parseCronExpression
 };
