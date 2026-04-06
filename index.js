@@ -3,14 +3,21 @@ const path = require('path');
 const stdColor = require('./lib/stdColor.js');
 const trade = require('./lib/trade.js');
 
-// Deep copy object or array
+/**
+ * Creates a deep copy of an object or array, recursively copying all nested properties.
+ * Supports flexible parameter usage: can accept a destination and source, or just a source to create a new copy.
+ * 
+ * @param {Object|Array|boolean} destination - The target object/array to copy into, or the source object if only one argument is provided, or a boolean for copyIterator if two arguments are provided.
+ * @param {Object|Array|boolean} [source] - The source object/array to copy from, or a boolean indicating whether to copy the Symbol.iterator property.
+ * @param {boolean} [copyIterator=false] - Optional flag indicating whether to copy the Symbol.iterator property from the source object.
+ * @returns {Object|Array} The destination object/array with all properties deeply copied from the source. If no destination is provided, returns a new object or array.
+ */
 function deepCopy(destination, source, /*optional*/copyIterator = false) {
-  //console.log('===deepCopy===', destination)
   if (typeof source === 'boolean') {
     copyIterator = source;
     source = undefined;
   }
-  // 允許傳入一個欲複製對象，傳出一個copy(不用先傳入空物件)
+  // You can pass in an object to be copied and return a copy (you don't need to pass in an empty object first).
   if (!source) {
     source = destination;
     destination = (Array.isArray(source)) ? [] : {};
@@ -58,9 +65,13 @@ function isDeepStrictEqual(object1, object2) {
 }
 
 /**
- * @param {object} child - an object which must have 'prototype' property
- * @param {object} proto1
- * @param {object} proto2
+ * Extends a child object's prototype by copying properties from one or more parent prototypes.
+ * This function takes a child object as the first argument, followed by any number of parent objects,
+ * and copies all enumerable properties from each parent's prototype to the child's prototype.
+ * 
+ * @param {Object} child - The child object whose prototype will be extended. Must have a 'prototype' property.
+ * @param {...Object} parents - One or more parent objects whose properties will be copied to the child's prototype.
+ * @returns {Object} The child object with its prototype extended with properties from all parent objects.
  */
 function extend() {
   // Get the list of prototypes			
@@ -274,5 +285,5 @@ module.exports = {
   mergeMessage, // For unit test
 
   noneDuplicateArray, createMonthSequence, getMathCombination, getFileExtension, getIntegerDigits,
-  parseCronExpression
+  parseCronExpression,
 };
