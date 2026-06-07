@@ -1,5 +1,6 @@
 const os = require('os');
 const path = require('path');
+const url = require('url');
 const stdColor = require('./lib/stdColor.js');
 const trade = require('./lib/trade.js');
 
@@ -37,6 +38,15 @@ function deepCopy(destination, source, /*optional*/copyIterator = false) {
 
   return destination;
 }
+
+/**
+ * Creates a deep copy via JSON serialization. Only supports JSON-serializable values
+ * (no functions, undefined, Symbol, Date, Map, etc.).
+ *
+ * @param {*} obj - The value to clone.
+ * @returns {*} A deep copy of the input.
+ */
+function deepCloneFromJson(obj) { return JSON.parse(JSON.stringify(obj)); }
 
 function isDeepStrictEqual(object1, object2) {
   if (object1 === object2) return true;
@@ -253,6 +263,25 @@ function getFileExtension(str) {
   return arr[arr.length - 1].toLowerCase();
 }
 
+/**
+ * Check whether the calling ESM module is being executed directly via CLI
+ * (vs being imported as a dependency). Caller must pass `import.meta.url`,
+ * because `import.meta` is only available inside the ESM module that owns it.
+ *
+ * Usage:
+ *   import util from 'util-universe';
+ *   if (util.isCli(import.meta.url)) { run(); }
+ *
+ * @param {string} importMetaUrl - the caller's `import.meta.url`
+ * @returns {boolean}
+ */
+function isCli(importMetaUrl) {
+  try {
+    if (!process.argv?.[1] || !importMetaUrl) return false;
+    return path.resolve(process.argv[1]) === path.resolve(url.fileURLToPath(importMetaUrl));
+  } catch (e) { return false; }
+}
+
 function getIntegerDigits(num) { return (typeof num !== 'number') ? null : num.toString().length; }
 
 function parseCronExpression(expression) {
@@ -270,7 +299,7 @@ module.exports = {
 
   isMac: (os.platform() === 'darwin'),
   rootPath: path.join(__dirname, '..'),
-  deepCopy, isDeepStrictEqual, extend,
+  deepCopy, deepCloneFromJson, isDeepStrictEqual, extend,
   bubbleSort, getOrderNumber,
   roundTo, mean,
   isEqualArray,
@@ -286,4 +315,5 @@ module.exports = {
 
   noneDuplicateArray, createMonthSequence, getMathCombination, getFileExtension, getIntegerDigits,
   parseCronExpression,
+  isCli,
 };
